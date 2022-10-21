@@ -3,6 +3,7 @@
 namespace Modules\CustomRemoteModule;
 
 use Illuminate\Support\ServiceProvider;
+use Modules\CustomRemoteModule\Kickstart\CustomKickstart;
 
 class CustomServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,11 @@ class CustomServiceProvider extends ServiceProvider
             $cidrMask = $this->mask2cidr($netmask);
 
             $script = str_replace('{{custom:cidrMask}}', $cidrMask, $script);
+
+            if(array_get($params, 'template.tags') == 'customtag') {
+                $kickstart = new CustomKickstart($script, $params);
+                $script = $kickstart->generate();
+            }
 
             return $script;
         });
